@@ -1,2 +1,2 @@
 # Automision
-Automatizaión de recursoso informáticos de la Misión Anti Inflación
+Automatización de recursos informáticos de la Misión Anti Inflación
