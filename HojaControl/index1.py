@@ -12,7 +12,7 @@ def grouper(iterable, n):
 data = pd.read_csv('Base.csv')
 circulos = pd.unique(data.C)
 
-c = canvas.Canvas("prueb6.pdf", pagesize=A4)
+c = canvas.Canvas("HojasControlD6.pdf", pagesize=A4)
 w, h = A4
 max_rows_per_page = 50
 # Margin.
