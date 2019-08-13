@@ -1,8 +1,6 @@
-import itertools, time, csv
+import itertools
 import pandas as pd
 import numpy as np
-from random import randint
-from statistics import mean
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
@@ -18,10 +16,10 @@ circs = np.sort(circs[np.logical_not(np.isnan(circs))]).astype(int)
 c = canvas.Canvas("HojasControlD5.pdf", pagesize=A4)
 an, al = A4
 max_rows_per_page = 50
-# Margin.
+
 x_offset = 30
 y_offset = 70
-# Space between rows.
+
 padding = 15
 
 xlist = [x + x_offset for x in [0, 300, 340, 380, 420, 460, 500, 540]]
@@ -43,7 +41,7 @@ for cr in circs:
 	prod = []
 	for row in tabla.index.tolist():
 		prod.append((row[0:80]))
-	dp = pd.DataFrame(prod).sort_index(inplace=True)
+	dp = pd.DataFrame(prod)
 	
 	
 	cant = []
@@ -51,8 +49,10 @@ for cr in circs:
 		cant.append(list(map(int, row)))
 	df = pd.DataFrame(cant)
 	
-	# frames = [dp,df]
-	result = pd.concat([dp,df], axis=1).values.tolist()
+	result = pd.concat([dp,df], axis=1).replace(0,"").values.tolist()
+	
+
+	pag = 1
 
 	for rows in grouper(result, max_rows_per_page):
 		
@@ -61,13 +61,16 @@ for cr in circs:
 		c.setFont('Helvetica', size=12)					#/
 		c.drawString(30, al-65, 'Productos')
 		c.setFontSize(size=8)
+		c.drawString(an-20, 15, str(pag))
+		pag = pag + 1
+		
+		
 		c.rotate(90)
 		posx = 240
 
 		for nomb in socios:			
 			c.drawString(al-65, posx-an, nomb[0:11])
 			posx = posx - 40
-		
 		c.rotate(-90)
 
 		rows = tuple(filter(bool, rows))
