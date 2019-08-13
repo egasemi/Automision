@@ -16,16 +16,16 @@ circs = pd.unique(data['Circulo Nro'])
 circs = np.sort(circs[np.logical_not(np.isnan(circs))]).astype(int)
 
 c = canvas.Canvas("HojasControlD5.pdf", pagesize=A4)
-w, h = A4
+an, al = A4
 max_rows_per_page = 50
 # Margin.
 x_offset = 30
-y_offset = 50
+y_offset = 70
 # Space between rows.
 padding = 15
 
-xlist = [x + x_offset for x in [0, 400, 425, 450, 475, 500, 525, 550]]
-ylist = [h - y_offset - i*padding for i in range(max_rows_per_page + 1)]
+xlist = [x + x_offset for x in [0, 300, 340, 380, 420, 460, 500, 540]]
+ylist = [al - y_offset - i*padding for i in range(max_rows_per_page + 1)]
 
 for cr in circs:
 
@@ -40,13 +40,13 @@ for cr in circs:
 	pedmarc['Nombre Prod.'] = pedmarc['Nombre Prod.'] + ' - ' + pedmarc['Marca']
 	tabla = pd.pivot_table(pedmarc, values=['Cantidad'], columns=['Nombre'], index=['Nombre Prod.'], aggfunc=np.sum, margins = True, margins_name = 'Total').fillna('0')
 	
-	prod = ['Producto']
+	prod = []
 	for row in tabla.index.tolist():
-		prod.append((row))
-	dp = pd.DataFrame(prod)
+		prod.append((row[0:80]))
+	dp = pd.DataFrame(prod).sort_index(inplace=True)
 	
 	
-	cant = [tuple(socios)]
+	cant = []
 	for row in tabla.values.tolist():
 		cant.append(list(map(int, row)))
 	df = pd.DataFrame(cant)
@@ -54,11 +54,22 @@ for cr in circs:
 	# frames = [dp,df]
 	result = pd.concat([dp,df], axis=1).values.tolist()
 
-	c.setFont('Helvetica-Bold',size=27)				#\
-	c.drawString(55, h-38,'Círculo N°'+ str(cr))	# > titulo de la hoja
-	c.setFont('Helvetica', size=12)					#/
-			
 	for rows in grouper(result, max_rows_per_page):
+		
+		c.setFont('Helvetica-Bold',size=25)				#\
+		c.drawString(30, al-50,'Círculo N°'+ str(cr))	# > titulo de la hoja
+		c.setFont('Helvetica', size=12)					#/
+		c.drawString(30, al-65, 'Productos')
+		c.setFontSize(size=8)
+		c.rotate(90)
+		posx = 240
+
+		for nomb in socios:			
+			c.drawString(al-65, posx-an, nomb[0:11])
+			posx = posx - 40
+		
+		c.rotate(-90)
+
 		rows = tuple(filter(bool, rows))
 		c.grid(xlist, ylist[:len(rows) + 1])
 		for y, row in zip(ylist[:-1], rows):
