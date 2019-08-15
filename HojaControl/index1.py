@@ -31,16 +31,16 @@ for cr in circs:
 	marcas = pd.read_csv('/home/emi/Git/Automision/HojaControl/Productos d5-16.csv', delimiter = '|').set_index('Codigo').Marca
 
 	pedido = data[data['Circulo Nro'] == cr].iloc[0:, 2:13]
-	pedmarc = pd.merge(pedido, marcas.to_frame(), left_index=True, right_index=True)
+	pedmarc = pd.merge(pedido, marcas.to_frame(), left_index=True, right_index=True).reset_index()
 	pedmarc['Nombre'] = pedmarc['Nombre'] + ' ' + pedmarc['Usuario'].str[:1]			
 	socios = list(pd.unique(pedmarc['Nombre']))
 	socios.append('Total')
 	pedmarc['Nombre Prod.'] = pedmarc['Nombre Prod.'] + ' - ' + pedmarc['Marca']
-	tabla = pd.pivot_table(pedmarc, values=['Cantidad'], columns=['Nombre'], index=['Nombre Prod.'], aggfunc=np.sum, margins = True, margins_name = 'Total').fillna('0')
+	tabla = pd.pivot_table(pedmarc, values=['Cantidad'], columns=['Nombre'], index=['index', 'Nombre Prod.'], aggfunc=np.sum, margins = True, margins_name = 'Total').fillna('0')
 	
 	prod = []
 	for row in tabla.index.tolist():
-		prod.append((row[0:80]))
+		prod.append((row[1][0:80]))
 	dp = pd.DataFrame(prod)
 	
 	
